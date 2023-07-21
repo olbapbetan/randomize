@@ -1,0 +1,41 @@
+.App {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1,
+h2,
+h3 {
+  text-align: center;
+}
+
+input {
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  width: calc(95%);
+  margin-bottom: 10px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 5px;
+  background-color: #DCDCDC;
+  margin-bottom: 10px;
+  border-radius: 2px;
+}
