@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css';
 
 function Randomizer({paramOptions}) {
   const [checkedOptions, setCheckedOptions] = useState(paramOptions);
@@ -33,7 +32,7 @@ function Randomizer({paramOptions}) {
   return (
     <div className="App">
       <h1>Randomizer</h1>
-      <button onClick={handleSpin} disabled={isSpinning || checkedOptions.length === 0}>
+      <button id="choose" onClick={handleSpin} disabled={isSpinning || checkedOptions.length === 0}>
         Choose one
       </button>
       {isSpinning && <div><h3>Choosing a winner in {countdown} s</h3></div>}

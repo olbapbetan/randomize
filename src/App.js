@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
 import { Button, ButtonGroup, Chip, Grid, Stack, TextField } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import Randomizer from './components/Randomizer';
 import Minuta from './components/Minuta';
+
+import './App.css';
 
 function App() {
   const [selectMembers, setSelectMembers] = useState([])
