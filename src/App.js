@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { Button, ButtonGroup, Chip, Grid, Stack, TextField } from '@mui/material';
+import { Add } from '@mui/icons-material';
+import Randomizer from './components/Randomizer';
+import Minuta from './components/Minuta';
+
 import './App.css';
 
 function App() {
-  const [options, setOptions] = useState([]);
-  const [checkedOptions, setCheckedOptions] = useState([]);
-  const [winner, setWinner] = useState('');
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  const [selectMembers, setSelectMembers] = useState([])
+  const [members, setMembers] = useState([])
+  const [newMember, setNewMember] = useState("")
+  const [selectedOption, setSelectedOption] = useState("")
+
+  const navOptions = ["Randomizer", "Notes"]
 
   useEffect(() => {
     // Function to parse URL parameters and set options if present
@@ -14,91 +20,63 @@ function App() {
     const optionsFromUrl = urlParams.get('options');
     if (optionsFromUrl) {
       const newOptions = optionsFromUrl.split(',').map((option) => option.trim());
-      console.log(newOptions)
-      setOptions(newOptions);
-      setCheckedOptions([...checkedOptions, ...newOptions]);
+      setSelectMembers(newOptions);
+      setMembers([...selectMembers, ...newOptions]);
     }
   }, []);
 
   useEffect(() => {
     // Update URL parameters whenever options change
     const urlParams = new URLSearchParams();
-    urlParams.set('options', options.join(','));
+    urlParams.set('options', selectMembers.join(','));
     window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
-  }, [options]);
+  }, [selectMembers]);
 
-  const handleAddOption = (event) => {
-    event.preventDefault();
-    const newOption = event.target.option.value.trim();
-    if (newOption !== '' && !options.includes(newOption)) {
-      setOptions([...options, newOption]);
-      setCheckedOptions([...checkedOptions, newOption]);
-      event.target.option.value = '';
+  const handleAddMember = (event) => {
+    const newOption = newMember.trim();
+    if (newOption !== '' && !selectMembers.includes(newOption)) {
+      setSelectMembers([...selectMembers, newOption]);
+      setMembers([...selectMembers, newOption]);
+      setNewMember('');
     }
   };
 
-  const handleCheckOption = (event, option) => {
-    const isChecked = event.target.checked;
-    if (isChecked) {
-      setCheckedOptions([...checkedOptions, option]);
+  const handleMemberClick = (e) => {
+    const member = e.target.innerHTML
+    if (members.includes(member)) {
+        setMembers(members.filter((m) => m !== member))
     } else {
-      setCheckedOptions(checkedOptions.filter((item) => item !== option));
-    }
-  };
-
-  const handleSpin = () => {
-    setWinner('')
-    const awaitingTime = 3;
-
-    if (checkedOptions.length > 0) {
-      setIsSpinning(true);
-      setCountdown(awaitingTime);
-
-      const interval = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-
-      setTimeout(() => {
-        clearInterval(interval);
-        const randomIndex = Math.floor(Math.random() * checkedOptions.length);
-        setWinner(checkedOptions[randomIndex]);
-        setIsSpinning(false);
-      }, awaitingTime * 1000);
-    } else {
-      setWinner('No options selected.');
+        setMembers([...members, member])
     }
   };
 
   return (
-    <div className="App">
-      <h1>Randomizer</h1>
-      <form onSubmit={handleAddOption}>
-        <input type="text" name="option" />
-        <button type="submit">Add option</button>
-      </form>
-      <div>
-        <h2>Options</h2>
-        <ul>
-          {options.map((option) => (
-            <li key={option}>
-              <label>
-                <input
-                  type="checkbox"
-                  onChange={(e) => handleCheckOption(e, option)}
-                  checked={checkedOptions.includes(option)}
-                />
-                {option}
-              </label>
-            </li>
+    <Stack direction={"column"} justifyContent={"center"} alignItems={"center"} sx={{rowGap: '24px'}} >
+        <Grid sx={{width: "50%"}} container spacing={1}>
+          {selectMembers.map((member, index) => (
+            <Grid key={index} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} item xs={4}>
+              <Chip color="primary" label={member} onClick={handleMemberClick} variant={members.includes(member) ? "" : "outlined"} />
+            </Grid>)
+          )}
+        </Grid>
+        <Stack direction={"row"} sx={{columnGap: '24px'}}>
+          <TextField size="small" onChange={(e) => setNewMember(e.target.value)} id="outlined-new-member" label="New Member" variant="outlined" value={newMember} />
+          <Button sx={{width: "fit-content"}} onClick={handleAddMember} variant="contained" >
+            <Add />
+          </Button>
+        </Stack>
+        <ButtonGroup variant="outlined" aria-label="outlined button group">
+          {navOptions.map((option) => (
+            <Button onClick={(e) => setSelectedOption(e.target.innerText)} >{option}</Button>
           ))}
-        </ul>
-      </div>
-      <button onClick={handleSpin} disabled={isSpinning || checkedOptions.length === 0}>
-        Choose one
-      </button>
-      {isSpinning && <div><h3>Choosing a winner in {countdown} s</h3></div>}
-      {winner && !isSpinning && <p>The winner is: {winner}</p>}
-    </div>
+        </ButtonGroup>
+        {
+          {
+            "RANDOMIZER": <Randomizer paramOptions={members} />,
+            "NOTES": <Minuta selectMembers={members} />
+          }[selectedOption]
+        }
+    </Stack>
   );
 }
 
